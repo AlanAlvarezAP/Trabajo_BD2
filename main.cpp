@@ -1,1 +1,1 @@
-cout
+cout<<"hello pe";
