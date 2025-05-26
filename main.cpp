@@ -1,2 +1,7 @@
-Ya no hay pruebas 3.0
+#include <iostream>
 
+
+int main() {
+
+	std::cout << "HOLA" << std::endl;
+}
