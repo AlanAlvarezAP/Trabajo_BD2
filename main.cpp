@@ -1,1 +1,2 @@
-cout<<"hello my friend";
+cout <<"peeeeeosnmoafnowfnqwojwowqenf";
+sdocvfnjawpeñioncjc;
