@@ -1,22 +1,38 @@
 #pragma once
 #include <iostream>
+#include <string>
 #include <queue>
 #include <vector>
 #include <stack>
 #include <tuple>
 
+
+struct Avl_info {
+    int index_tabla;
+    std::string dato;
+    int tipo;
+};
 template<class T>
 struct Node {
     T value;
+    Avl_info info;
     int height;
+    std::vector<Avl_info> dup;
     Node<T>* nodes[2];
+
     Node(T v, int h = 1) {
         value = v;
         height = h;
         nodes[0] = nullptr;
         nodes[1] = nullptr;
+
     }
 };
+
+
+
+
+
 
 template<class T>
 struct CBinTree {
@@ -24,8 +40,9 @@ struct CBinTree {
     int cant_nodos = 0;
     std::vector<T> In;
     std::vector<T> Pre;
-    bool Find(std::stack<Node<T>**>& stac, T x, Node<T>**& pos);
-    void Ins(T x);
+    bool Find(std::stack<Node<T>**>& stac, T x, Node<T>**& pos, Avl_info trp);
+    bool Findalt(T x, Node<T>**& pos);
+    void Ins(T x, Avl_info trp);
     void LevelOrder(int& max_level);
     void InOrder(Node<T>* m_root);
     void PreOrder(Node<T>* m_root);
@@ -37,14 +54,20 @@ struct CBinTree {
     void RL(Node<T>**& node);
     void LL(Node<T>**& node);
     void LR(Node<T>**& node);
-};
 
+};
+template<class T>
+std::pair<Avl_info, std::vector <Avl_info>> buscarnode(CBinTree<T>& xd, T x);
 
 template<class T>
-bool CBinTree<T>::Find(std::stack<Node<T>**>& stac, T x, Node<T>**& pos) {
+std::pair<Avl_info, std::vector <Avl_info>> Crear_nodo(std::vector<Avl_info> dupl, T valor);
+
+template<class T>
+bool CBinTree<T>::Find(std::stack<Node<T>**>& stac, T x, Node<T>**& pos, Avl_info trp) {
     pos = &root;
     while (*pos) {
         if ((*pos)->value == x) {
+            (*pos)->dup.push_back(trp);
             return true;
         }
         stac.push(pos);
@@ -53,6 +76,17 @@ bool CBinTree<T>::Find(std::stack<Node<T>**>& stac, T x, Node<T>**& pos) {
     return false;
 }
 
+template<class T>
+bool CBinTree<T>::Findalt(T x, Node<T>**& pos) {
+    pos = &root;
+    while (*pos) {
+        if ((*pos)->value == x) {
+            return true;
+        }
+        pos = &((*pos)->nodes[(*pos)->value < x]);
+    }
+    return false;
+}
 template<class T>
 int CBinTree<T>::Update_height(Node<T>* node) {
     int l_height = (node->nodes[0]) ? node->nodes[0]->height : 0;
@@ -115,12 +149,13 @@ void CBinTree<T>::LR(Node<T>**& root) {
 }
 
 template <class T>
-void CBinTree<T>::Ins(T x) {
+void CBinTree<T>::Ins(T x, Avl_info trp) {
     Node<T>** pos = nullptr;
     std::stack<Node<T>**> stack;
     Node<T>** tmp;
-    if (!Find(stack, x, pos)) {
+    if (!Find(stack, x, pos, trp)) {
         *pos = new Node<T>(x);
+        (*pos)->info = trp;
         while (!stack.empty()) {
             tmp = stack.top();
             (*tmp)->height = Update_height(*tmp);
@@ -200,4 +235,50 @@ void CBinTree<T>::PreOrder(Node<T>* m_root) {
     Pre.push_back(m_root->value);
     PreOrder(m_root->nodes[0]);
     PreOrder(m_root->nodes[1]);
+}
+
+template<class T>
+std::pair<Avl_info, std::vector <Avl_info>> buscarnode(CBinTree<T>& xd, T x) {
+    Node<T>** pos = nullptr;
+    if (xd.Findalt(x, pos)) {
+        return std::pair<Avl_info, std::vector<Avl_info>> { (*pos)->info, (*pos)->dup };
+    }
+    else {
+        return std::pair<Avl_info, std::vector<Avl_info>>();
+    }
+
+}
+template<class T>
+std::pair<Avl_info, std::vector <Avl_info>> Crear_nodo(std::vector<Avl_info> dupl, T valor) {
+    //iterar el vector y crear los nodos
+
+    int tipo = dupl[0].tipo;
+
+    CBinTree<int> arbolavl_int;
+    CBinTree<std::string> arbolavl_string;
+    CBinTree<float> arbolavl_float;
+
+
+    for (auto x : dupl) {
+        if (tipo == 0) {
+            arbolavl_int.Ins(std::stoi(x.dato), x);
+        }
+        else if (tipo == 1) {
+            arbolavl_string.Ins(x.dato, x);
+        }
+        else {
+            arbolavl_float.Ins(std::stof(x.dato), x);
+        }
+    }
+
+    if (tipo == 0) {
+        return buscarnode<int>(arbolavl_int, std::stoi(valor));
+    }
+    else if (tipo == 1) {
+        return buscarnode<std::string>(arbolavl_string, valor);
+    }
+    else {
+        return buscarnode<float>(arbolavl_float, std::stof(valor));
+    }
+
 }
