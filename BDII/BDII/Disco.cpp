@@ -287,7 +287,7 @@ void Disco::get_columnas(std::string campo, std::string valor, RAM& ram) {
     ram.construir(campo, columna_arbol);
     auto resultado = ram.buscar(campo, valor);
 
-    if (resultado.first.index_tabla != 0 || !resultado.second.empty()) {
+    if (!resultado.first.dato.empty()) {
         std::cout << "Resultado encontrado:\n";
         mostrar_registro(resultado.first.index_tabla);
 

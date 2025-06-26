@@ -70,8 +70,7 @@ void Archivos::Leer_info_csv(Disco &disco) {
 	std::string linea;
 	int registro_id = 0;
 	bool cabecera = true;
-	//leedor.open("D:/taxables (1).csv");
-	leedor.open("E:/pruebas.csv");
+	leedor.open("D:/taxables (1).csv");
 	if (!leedor.is_open()) {
 		std::cout << " No se pudo leer el archivo " << std::endl;
 		return;

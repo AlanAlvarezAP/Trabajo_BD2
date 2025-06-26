@@ -28,5 +28,5 @@ int main() {
 	prueba.Leer_info_sql();
 	prueba.Leer_info_csv(disco);
 	disco.Rebuild_data();
-	disco.get_columnas("TaX","216.00",ram);
+	disco.get_columnas("item","M and M, 42 oz",ram);
 }
