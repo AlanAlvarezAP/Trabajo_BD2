@@ -4,6 +4,7 @@
 #include <tuple>
 #include "Disco.h"
 #include "Archivos.h"
+#include "RAM.h"
 
 int main() {
 	int cant_platos;
@@ -22,9 +23,10 @@ int main() {
 	std::cin >> cant_bytes_sector;
 
 	Disco disco(cant_platos,cant_pistas,cant_sectores,cant_bytes_sector);
+	RAM ram;
 	Archivos prueba;
 	prueba.Leer_info_sql();
 	prueba.Leer_info_csv(disco);
 	disco.Rebuild_data();
-	disco.get_columnas("Tax");
+	disco.get_columnas("TaX","216.00",ram);
 }

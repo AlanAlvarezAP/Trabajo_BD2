@@ -6,6 +6,8 @@
 #include <string>
 #include <sstream>
 #include "Disco.h"
+#include "AVL.h"
+#include "RAM.h"
 
 Sector::Sector(int id, int cap) {
 	this->id = id;
@@ -214,38 +216,89 @@ void Disco::Rebuild_data() {
         }
     }
 }
+int Disco::obtener_indice_tipo(std::string campo) {
+    std::transform(campo.begin(), campo.end(), campo.begin(), ::tolower);
+    if (campo == "index") { 
+        return 0; 
+    }
+    if (campo == "item") { 
+        return 1; 
+    }
+    if (campo == "cost") { 
+        return 2; 
+    }
+    if (campo == "tax") { 
+        return 3; 
+    }
+    if (campo == "total") { 
+        return 4; 
+    }
+    return -1;
+}
+void Disco::mostrar_registro(int index) {
+    if (index < tabla_final.size()) {
+        std::cout << "  Registro:\n";
+        for (auto& campo : tabla_final[index]) {
+            std::cout << "    Dato: " << campo.first << "\n";
+            std::cout << "    Ubicación en disco:\n";
+            for (auto& info : campo.second) {
+                std::cout << "      Plato: " << info.num_plato << ", Superficie: " << info.num_superficie
+                    << ", Pista: " << info.num_pista << ", Sector: " << info.num_sector << "\n";
+            }
+        }
+    }
+}
 
-void Disco::get_columnas(std::string campo) {
-    std::transform(campo.begin(),campo.end(),campo.begin(),::tolower);
+void Disco::get_columnas(std::string campo, std::string valor, RAM& ram) {
     std::vector<Avl_info> columna_arbol;
+    std::transform(campo.begin(), campo.end(), campo.begin(), ::tolower);
+
     int indice_tipo = -1;
     if (campo == "index") {
         indice_tipo = 0;
     }
     else if (campo == "item") {
         indice_tipo = 1;
-    }
+    } 
     else if (campo == "cost") {
         indice_tipo = 2;
     }
     else if (campo == "tax") {
         indice_tipo = 3;
-    }
+    } 
     else if (campo == "total") {
         indice_tipo = 4;
-    }
+    } 
 
     if (indice_tipo == -1) {
-        std::cout << "Campo inválido: " << campo << std::endl;
+        std::cout << "Campo inválido.\n";
         return;
     }
 
     if (tabla_final.empty()) {
-        std::cout << "No hay datos cargados en memoria." << std::endl;
+        std::cout << "No hay datos cargados en memoria.\n";
         return;
     }
 
-    for (int i = 0;i < tabla_final.size();i++) {
-        columna_arbol.push_back(Avl_info{ i,tabla_final[i][indice_tipo].first,indice_tipo });
+    for (int i = 0; i < tabla_final.size(); i++) {
+        columna_arbol.push_back(Avl_info{ i, tabla_final[i][indice_tipo].first, indice_tipo });
+    }
+
+    ram.construir(campo, columna_arbol);
+    auto resultado = ram.buscar(campo, valor);
+
+    if (resultado.first.index_tabla != 0 || !resultado.second.empty()) {
+        std::cout << "Resultado encontrado:\n";
+        mostrar_registro(resultado.first.index_tabla);
+
+        if (!resultado.second.empty()) {
+            std::cout << "  Coincidencias duplicadas:\n";
+            for (auto& dup : resultado.second) {
+                mostrar_registro(dup.index_tabla);
+            }
+        }
+    }
+    else {
+        std::cout << "No se encontró el valor " << valor << " en el campo " << campo << "\n";
     }
 }

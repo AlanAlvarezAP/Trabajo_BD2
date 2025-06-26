@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <tuple>
 #include <fstream>
+#include "AVL.h"
+#include "RAM.h"
 
 struct Metadata {
 	int registro_id;
@@ -22,11 +24,6 @@ struct Info {
 	int num_sector;
 };
 
-struct Avl_info {
-	int index_tabla;
-	std::string dato;
-	int tipo;
-};
 
 class Sector {
 public:
@@ -70,7 +67,9 @@ public:
 	void Insertar_data(std::string datos, int num_tipo,int real_tam, int registro_id);
 	Sector& get_allinfo(int sector_id_send, std::vector<Info>& info);
 	void Rebuild_data();
-	void get_columnas(std::string campo);
+	int obtener_indice_tipo(std::string campo);
+	void mostrar_registro(int index);
+	void get_columnas(std::string campo, std::string valor,RAM& ram);
 };
 
 

@@ -70,7 +70,8 @@ void Archivos::Leer_info_csv(Disco &disco) {
 	std::string linea;
 	int registro_id = 0;
 	bool cabecera = true;
-	leedor.open("D:/taxables (1).csv");
+	//leedor.open("D:/taxables (1).csv");
+	leedor.open("E:/pruebas.csv");
 	if (!leedor.is_open()) {
 		std::cout << " No se pudo leer el archivo " << std::endl;
 		return;
@@ -153,7 +154,6 @@ void Archivos::Leer_info_sql() {
 		tipo.erase(std::remove(tipo.begin(), tipo.end(), ' '), tipo.end());
 		std::getline(info, pk_null);
 
-		// Sacar bien el tipo
 		size_t prim_parentesis = tipo.find('(');
 		if (prim_parentesis != std::string::npos) {
 			std::string tmp_tipo = tipo.substr(0, prim_parentesis);
@@ -172,8 +172,6 @@ void Archivos::Leer_info_sql() {
 			}
 			tipo = tmp_tipo;
 		}
-		
-		// Procesar Extra
 
 		if (pk_null.find("PRIMARY") != std::string::npos && pk_null.find("KEY") != std::string::npos)
 			pk = true;
